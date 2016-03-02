@@ -127,7 +127,7 @@ void play() {
 
 int main() {
 	while (true) {
-		cout << "Please choose one of the following options (type 1,2 or 3):\n";
+		cout << "Please choose one of the following options (type 1, 2, or 3):\n";
 		cout << "[1] New Game\n";
 		cout << "[2] Rules - PLEASE READ if you haven't played this game before.\n";
 		cout  << "[3] Exit\n";

@@ -103,7 +103,7 @@ public:
 		clock_t t = clock();
 		Board B1 = strat.make_move(B,is_first);
 		t = clock()-t;
-		cout << "It takes " << name << " " << t/1000.0 << " seconds to make a move.\n";
+		cout << "It takes " << name << " " << ((float)t)/CLOCKS_PER_SEC << " seconds to make a move.\n";
 		int cur_player = (is_first)? 1:-1;
 		is_victorious = (B1.who_wins == cur_player) ? 1:0;
 		if (is_victorious) {
