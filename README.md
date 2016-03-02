@@ -7,7 +7,15 @@ In this project, I am building an AI to be able to solve generalized Tic Tac Toe
 Copy
 
 [UPDATES]
-v1.0 - Feb 28th, 2016, uploaded the first prototype with the first heuristic function (heu1)
+v1.1
+1. Create Board_Checker object as a private object for Board that enhances/allows the following operations:
+	a. Check and update the number of winnable lines (rows, columns, both diagonals)
+	b. Check whether the current board is a draw (check_draw)
+2. Add two heuristic functions and test its variations with AI players
+
+v1.0
+Uploaded the first prototype with the first heuristic function (heu1)
+
 
 [FAQ]
 Q: What is generalized Tic Tac Toe?
