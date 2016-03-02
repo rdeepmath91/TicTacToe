@@ -8,7 +8,6 @@
 #ifndef PLAYER_H_
 #define PLAYER_H_
 
-#include "Board_Checker.h"
 #include "Strategy.h"
 
 class Player {
@@ -29,8 +28,7 @@ public:
 	void set_name(string s) {name = s;}
 	void set_first() {is_first = true;}
 
-	virtual Board move(Board& B) {
-		cout << "astaga\n";
+	virtual Board move(Board B) {
 		return B;
 	}
 };
@@ -63,22 +61,25 @@ class Human_Player: public Player {
 
 public:
 	Human_Player() {
-		name = "Anonymous";
+		name = "Anon";
 	}
 
-	virtual Board move(Board& B) {
+	virtual Board move(Board B) {
 		int x,y;
-		Board B1(B);
+		Board B1 = B;
 		cout << "Your turn, please input your move.\n";
 		while (true) {
 			x = input_row(B1.row); x--;
 			y = input_col(B1.col); y--;
-			if (!B1.is_empty(x,y)) cout << "This spot has been filled. Choose another spot.\n";
+			if (!B1.is_empty(x,y))
+				cout << "This spot has been filled. Choose another one.\n";
 			else break;
 		}
+		file << "(" << x+1 << "," << y+1 << ")\n";
 		B1.put(is_first,x,y);
 		B1.print_board(1);
-		is_victorious = check_win(B1,is_first);
+		int cur_player = (is_first)? 1:-1;
+		is_victorious = (B1.who_wins == cur_player) ? 1:0;
 		if (is_victorious) cout << "Congratulations, you win the game!\n";
 		return B1;
 	}
@@ -97,14 +98,19 @@ public:
 		strat.name = s;
 	}
 
-	virtual Board move(Board& B) {
-		cout << name << "'s turn...\n";
+	virtual Board move(Board B) {
+		cout << endl << name << "'s turn...\n";
 		clock_t t = clock();
 		Board B1 = strat.make_move(B,is_first);
 		t = clock()-t;
 		cout << "It takes " << name << " " << t/1000.0 << " seconds to make a move.\n";
-		is_victorious = check_win(B1,is_first);
-		if (is_victorious) cout << "Sorry, you lost.\n";
+		int cur_player = (is_first)? 1:-1;
+		is_victorious = (B1.who_wins == cur_player) ? 1:0;
+		if (is_victorious) {
+			cout << name << " wins the game.\n";
+			file << name << " wins the game.\n";
+		}
+		cout << endl;
 		return B1;
 	}
 };

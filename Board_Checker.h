@@ -8,68 +8,42 @@
 #ifndef BOARD_CHECKER_H_
 #define BOARD_CHECKER_H_
 
-int row_count(Board &B, int mark, int row, int col) {
-	/* left to right */
-	int res = 0;
-	for (int i=0;i<min(B.col,B.row);i++) {
-		if (B.board[row][col+i]==mark) res++;
-		else if (B.board[row][col+i]==-mark) return 0;
-	}
-	return res;
-}
+class Board_Checker {
+public:
 
-int col_count(Board &B, int mark, int row, int col) {
-	/* top to bottom */
-	int res = 0;
-	for (int i=0;i<min(B.row,B.col);i++) {
-		if (B.board[row+i][col]==mark) res++;
-		else if (B.board[row+1][col]==-mark) return 0;
-	}
-	return res;
-}
+	/*
+	 * V.second = true if and only if the line is still winnable/just won
+	 * The following are possible V.first values:
+	 * 0 (non-marked, winnable)
+	 * k>0 (marked by k Xs, no Os)
+	 * k<0 (marked by k O's, no Xs)
+	 */
 
-int diag_count1(Board &B, int mark, int row, int col) {
-	/* top left bottom right diagonal */
-	int res = 0;
-	for (int i=0;i<min(B.row,B.col);i++) {
-		if (B.board[row+i][col+i]==mark) res++;
-		else if (B.board[row+i][col+i]==-mark) return 0;
-	}
-	return res;
-}
+	vector<pair<int,bool> > row_L, col_L;
+	vector<pair<int,bool> > diag1_L, diag2_L;
+	int pos_lines;
 
-int diag_count2(Board &B, int mark, int row, int col) {
-	/* top right bottom left diagonal */
-	int res = 0;
-	for (int i=0;i<min(B.row,B.col);i++) {
-		if (B.board[row+i][col-i]==mark) res++;
-		else if (B.board[row+i][col-i]==-mark) return 0;
+	Board_Checker() {
+		pos_lines = 0;
 	}
-	return res;
-}
 
-bool check_win(Board &B, bool is_first) {
-		/* check whether the current board is a win */
-		int mark,T = min(B.row,B.col);
-		if (is_first) mark = 1;
-		else mark = -1;
-		for (int i=0;i<B.row;i++) {
-			for (int j=0;j<B.col;j++) {
-				if (j+T<=B.col && row_count(B,mark,i,j)==T) return true;
-				if (i+T<=B.row && col_count(B,mark,i,j)==T) return true;
-				else if (i+T<=B.row && j+T<=B.col && diag_count1(B,mark,i,j)==T) return true;
-				else if (i+T<=B.row && j-(T-1)>=0 && diag_count2(B,mark,i,j)==T) return true;
-			}
+	Board_Checker(int row, int col) {
+		pair<int,bool> tmp = make_pair(0,true);
+		if (row<col) {
+			for (int i=0;i<(col-row+1)*row;i++) row_L.push_back(tmp);
+			for (int i=0;i<col;i++) col_L.push_back(tmp);
 		}
-
-		return false;
-}
-
-bool is_terminal(Board &B) {
-	/* check whether the current board is a terminal */
-	if (B.num_empty==0 || check_win(B,0) || check_win(B,1)) return true;
-	return false;
-}
-
+		else {
+			for (int i=0;i<row;i++) row_L.push_back(tmp);
+			for (int i=0;i<(row-col+1)*col;i++) col_L.push_back(tmp);
+		}
+		for (int i=0;i<abs(row-col)+1;i++) {
+			diag1_L.push_back(tmp);
+			diag2_L.push_back(tmp);
+		}
+		pos_lines = (int) row_L.size()+ (int) col_L.size();
+		pos_lines += (int) diag1_L.size() + (int) diag2_L.size();
+	}
+};
 
 #endif /* BOARD_CHECKER_H_ */

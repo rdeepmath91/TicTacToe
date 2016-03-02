@@ -1,11 +1,11 @@
-/*
- * TicTacToe.cpp
+/* * TicTacToe.cpp
  *
  *  Created on: Feb 20, 2016
  *      Author: Raymond
  */
 
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include <cstdlib>
@@ -16,14 +16,17 @@ using namespace std;
 
 #define PII pair<int,int>
 
+ofstream file ("moves.txt");
+
 #include "input_checker.h"
 #include "Board.h"
 #include "Player.h"
 
 Board B; // the TicTacToe board
-Human_Player H,H2; // the Human players
-AI_Player A,A2; // the AI players
+Human_Player H,H2;
+AI_Player A,A2;
 Player *P[2], *cur_player;
+int GAME_COUNT = 0;
 
 void ask_board_size() {
 	int r,c;
@@ -68,44 +71,58 @@ void ask_order() {
 		cin >> res;
 		if (res=='y') {
 			H.set_first();
-			cout << "You will be playing first.\n";
+			// cout << "You will be playing first.\n";
+			// uncomment if there's a 2nd AI player
+			A2.set_first();
+			cout << A2.name << " will be playing first.\n";
 			B.print_board(1);
 		}
 		else if (res=='n'){
 			A.set_first();
-			cout << A2.name << " will be playing first.\n";
+			cout << A.name << " will be playing first.\n";
 		}
 		else cout << "Invalid input.\n";
 	}
 }
 
 void play() {
+	GAME_COUNT++;
 	cout << "---Starting a generalized Tic Tac Toe---\n";
+	file << "[Game " << GAME_COUNT << "]";
 	ask_board_size();
+	file << " - " << B.row << "x" << B.col << " board\n";
 	H = Human_Player();
-	A = AI_Player(); A.set_strat("Expert");
+	A = AI_Player(); A.set_strat("Expert2");
+	// uncomment the next line to add 2nd AI player
+	A2 = AI_Player(); A2.set_strat("Expert1"); A2.name = "Expert1";
 	cout << A.name << " will be your opponent.\n";
 	ask_order();
 	if (H.is_first) {
-		P[0] = &H;
+		//P[0] = &H;
 		//P[1] = &H2; // uncomment to add 2nd human player
 		P[1] = &A;
-		//P[0] = &A2; // uncomment to add 2nd AI player
+		P[0] = &A2; // uncomment to add 2nd AI player
 	}
 	else {
 		P[0] = &A;
-		//P[0] = &A2; // uncomment to add 2nd AI player
-		P[1] = &H;
 		//P[0] = &H2; // uncomment to add 2nd human player
+		//P[1] = &H;
+		P[1] = &A2; // uncomment to add 2nd AI player
 	}
 	int player_ind = 0;
-	while (B.num_empty) {
+	while (true) {
 		cur_player = P[player_ind];
+		file << cur_player->name << ": ";
 		B = cur_player->move(B);
 		if (cur_player->is_victorious) break;
+		if (B.check_draw()) {
+			cout << "It's a draw.\n";
+			file << "It's a draw.\n";
+			return;
+		}
 		player_ind = 1-player_ind;
 	}
-	if (!P[0]->is_victorious && !P[1]->is_victorious) cout << "It's a draw.\n";
+	file << endl;
 }
 
 int main() {
@@ -135,6 +152,7 @@ int main() {
 		else cout << "Invalid input.\n";
 		cout << endl;
 	}
+	file.close();
 	cout << "Thank you for playing!\n";
 	return 0;
 }
