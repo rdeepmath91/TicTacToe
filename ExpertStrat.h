@@ -2,7 +2,7 @@
  * ExpertStrat.h
  *
  *  Created on: Feb 24, 2016
- *      Author: Raymond
+ *      Author: Raymond Christopher
  */
 
 #ifndef EXPERTSTRAT_H_
@@ -40,10 +40,10 @@ PII win_or_block(Board B, bool is_first) {
 	return make_pair(-1,-1);
 }
 
-PII ExpertStrat(Board B, bool is_first, string name, int depth) {
+PII ExpertStrat(Board B, bool is_first) {
 	PII p = win_or_block(B,is_first);
 	if (p.first!=-1) return p;
-	return MM(B,is_first,name);
+	return MM(B,is_first);
 }
 
 

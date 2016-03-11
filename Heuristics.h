@@ -2,7 +2,7 @@
  * Heuristics.h
  *
  *  Created on: Feb 24, 2016
- *      Author: Raymond
+ *      Author: Raymond Christopher
  */
 
 #ifndef HEURISTICS_H_
@@ -67,11 +67,18 @@ int heu2(Board &B, bool is_first) {
 	return sum;
 }
 
-int final_heu(Board &B, bool is_first, string name) {
+double final_heu(Board &B, bool is_first, string name) {
+	/* heuristic value of a board state B after player is_fist making his move
+	 * name: name for strategy which is used to calculate the value
+	 */
+
+	int cur_player = is_first ? 1:-1;
+	if (B.who_wins*cur_player==1) return INF;
+	else if (B.who_wins*cur_player==-1) return -INF;
 	if (name=="Expert2")
-		return heu2(B,is_first)-heu1(B,!(is_first));
+		return 1.0*(heu2(B,is_first)-heu1(B,!(is_first)));
 	else if (name=="Expert1")
-		return heu1(B,is_first)-heu1(B,!(is_first));
+		return 1.0*(heu1(B,is_first)-heu1(B,!(is_first)));
 	return 0;
 }
 

@@ -9,79 +9,10 @@
 #define BOARD_H_
 
 #include "Board_Checker.h"
-#define BOARD_LIMIT 50
 
 class Board{
 
-	bool update_line(pair<int,bool> &line, int cur_player,int limit) {
-		/* update a specific line after adding new mark within it
-		 * return true iff the line is a win
-		*/
 
-		if (line.second) {
-			if (line.first*cur_player>=0) {
-				line.first += cur_player;
-				if (abs(line.first)==limit) return true;
-			}
-			else {
-				line.second = false;
-				BC.pos_lines--;
-			}
-		}
-		return false;
-	}
-
-	bool update(int cur_player, int x, int y) {
-		/* update the vectors for lines as cur_player makes a move at (x,y)
-		 cur_player = 1 for 1st player, = -1 for 2nd player
-		 return true if cur_player wins, else return 0
-		 */
-		int T = min(row,col);
-		pair<int,bool> tmp;
-		// check row lines
-		for (int i=max(y-(T-1),0);i<=y;i++) {
-			if (i+T>col) break;
-			if (row<col) {
-				if (update_line(BC.row_L[x*(col-row+1)+i],cur_player,T)) return true;
-			}
-			else if (update_line(BC.row_L[x],cur_player,T)) return true;
-		}
-
-		// check column lines
-		for (int i=max(x-(T-1),0);i<=x;i++) {
-			if (i+T>row) break;
-			if (row<col) {
-				if (update_line(BC.col_L[y],cur_player,T)) return true;
-			}
-			else if (update_line(BC.col_L[i+y*(row-col+1)],cur_player,T)) return true;
-		}
-
-		int t1,t2;
-		// check diag1 line
-		t1 = x-min(x,y);
-		t2 = y-min(x,y);
-		if (row<col) {
-			if (t1==0 && t2+T<=col)
-				if (update_line(BC.diag1_L[t2],cur_player,T)) return true;
-		}
-		else {
-			if (t1+T<=row && t2==0)
-				if (update_line(BC.diag1_L[t1],cur_player,T)) return true;
-		}
-
-		// check diag2 line
-		t1 = x+min(row-1-x,y);
-		t2 = y-min(row-1-x,y);
-		if (row<col) {
-			if (t1==row-1 && t2+T<=col)
-				if (update_line(BC.diag2_L[t2],cur_player,T)) return true;
-		}
-		else {
-			if (t1>=T-1 && t2==0)
-				if (update_line(BC.diag2_L[t1-(T-1)],cur_player,T)) return true;
-		}
-		return 0;
-	}
 
 public:
 	int row;
@@ -115,33 +46,25 @@ public:
 		create_board();
 	}
 
-
-	void print_board_checker() {
-		cout << "Print row lines...\n";
-		for (int i=0;i<(int) BC.row_L.size();i++)
-			cout << "Row Line " << i << ": " << BC.row_L[i].first << " " << BC.row_L[i].second << endl;
-
-		cout << "Print col lines...\n";
-		for (int i=0;i<(int)BC.col_L.size();i++)
-			cout << "Col Line " << i << ": " << BC.col_L[i].first << " " << BC.col_L[i].second << endl;
-
-		cout << "Print diag1 lines...\n";
-		for (int i=0;i<(int)BC.diag1_L.size();i++)
-			cout << "Diag1 Line " << i << ": " << BC.diag1_L[i].first << " " << BC.diag1_L[i].second << endl;
-
-		cout << "Print Diag2 lines...\n";
-		for (int i=0;i<(int)BC.diag2_L.size();i++)
-			cout << "Diag2 Line " << i << ": " << BC.diag2_L[i].first << " " << BC.diag2_L[i].second << endl;
-	}
-
 	void print_board(int sp) {
+		cout << "    ";
+		file << "    ";
+		for (int i=0;i<col;i++) {
+			cout << i+1 << " ";
+			file << i+1 << " ";
+		}
+		cout << "\nROW";
+		file << "\nROW";
+		for (int j=0;j<2*col+1;j++) {
+			cout << "-";
+			file << "-";
+		}
+		cout << endl;
+		file << endl;
 		for (int i=0;i<row;i++) {
-			for (int j=0;j<2*col+1;j++) {
-				cout << "-";
-				file << "-";
-			}
-			cout << endl;
-			file << endl;
+			// to change if # of row >= 10
+			cout << " " << i+1 << " ";
+			file << " " << i+1 << " ";
 			for (int j=0;j<col;j++) {
 				cout << "|";
 				file << "|";
@@ -158,16 +81,16 @@ public:
 					file << " ";
 				}
 			}
-			cout << "|" << endl;
-			file << "|" << endl;
+			cout << "|" << endl << "   ";
+			file << "|" << endl << "   ";
+			for (int j=0;j<2*col+1;j++) {
+				cout << "-";
+				file << "-";
+			}
+			cout << endl;
+			file << endl;
 		}
-		for (int i=0;i<2*col+1;i++) {
-			cout << "-";
-			file << "-";
-		}
-		cout << endl;
-		file << endl;
-		//print_board_checker();
+		//BC.print_board_checker();
 	}
 
 	bool is_empty(int x,int y) {
@@ -186,10 +109,10 @@ public:
 	}
 
 	void put(bool is_first, int x, int y) {
-		/* cur_player put a mark at (x,y)  */
+		/* cur_player marks his move at (x,y)  */
 		int cur_player = is_first ? 1:-1;
 		board[x][y] = cur_player;
-		if(update(cur_player, x,y))
+		if(BC.update(cur_player,x,y,row,col))
 			who_wins = cur_player;
 		num_empty--;
 	}

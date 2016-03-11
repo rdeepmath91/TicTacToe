@@ -2,7 +2,7 @@
  * input_checker.h
  *
  *  Created on: Feb 21, 2016
- *      Author: Raymond
+ *      Author: Raymond Christopher
  */
 
 #ifndef INPUT_CHECKER_H_

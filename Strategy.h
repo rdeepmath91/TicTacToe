@@ -2,13 +2,15 @@
  * Strategy.h
  *
  *  Created on: Feb 23, 2016
- *      Author: Raymond
+ *      Author: Raymond Christopher
  */
 
 #ifndef STRATEGY_H_
 #define STRATEGY_H_
 
-int DEPTH_LIMIT = 4;
+int DEPTH_LIMIT = 4; // the depth to use heuristic
+string CUR_STRAT; // strategy of current player
+double INF = 1000.0; // a value acting as 'infinite value' for maxmin
 
 #include "Board_Checker.h"
 #include "Heuristics.h"
@@ -16,7 +18,7 @@ int DEPTH_LIMIT = 4;
 #include "ExpertStrat.h"
 
 PII Random(Board B, bool is_first) {
-	/* default strategy: put in to the board randomly */
+	/* random strategy: put the mark in an empty square board randomly */
 
 	int r = B.row;
 	int c = B.col;
@@ -48,7 +50,8 @@ public:
 	}
 
 	PII use_strat(Board B, bool is_first) {
-		return ExpertStrat(B, is_first,name,depth);
+		CUR_STRAT = name;
+		return ExpertStrat(B, is_first);
 		return Random(B, is_first);
 	}
 
